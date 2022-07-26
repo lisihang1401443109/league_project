@@ -27,10 +27,10 @@ function getSummonerInfo(summonerName){
   })
 }
 
-function getMatchesInfo(puuid){
+function getMatchesInfo(puuid, count){
   var apiString = apiBaseAmericas + '/tft/match/v1/matches/by-puuid/'
                   + puuid + '/ids'+ '?start=' + '0'
-                  + '&count=' + '1' + '&api_key=' + apiKey;
+                  + '&count=' + count + '&api_key=' + apiKey;
 
   //returns an object promise
   return axios.get(apiString).then(function(response){
@@ -42,6 +42,23 @@ function getMatchesInfo(puuid){
   
 }
 
+function getMatchDetail(matchID){
+  var apiString = apiBaseAmericas + '/tft/match/v1/matches/' + matchID + '?api_key=' + apiKey
+  return axios.get(apiString).then(function(response){
+    if ('data' in response){
+      return response.data.metadata.participants
+    }else{
+      return response.metadata.participants
+    }
+  }).catch(function (response){
+    console.log('Error: ' + response)
+  })
+}
+
+function getPlayerStats(players){
+
+}
+
 function searchHandler(e, summonerName){
   e.preventDefault();
 
@@ -51,16 +68,20 @@ function searchHandler(e, summonerName){
     // root.render(<Field value={data}/>)
     if ('puuid' in data){
       console.log('puuid: ' + data.puuid);
-      return getMatchesInfo(data.puuid)
+      return getMatchesInfo(data.puuid, 1)
     }else{
       console.log('no puuid')
       return;
     }
   })
 
-  matches_data.then(function(matches){
-    console.log('matches: '+ matches[0]);
+  const matchPromise = matches_data.then(function(matches){
+    // get the most recent match
+    var match_interested = matches[0]
+    return getMatchDetail(match_interested)
   })
+
+  matchPromise.then(object => getPlayerStats(object));
 }
 
 class Field extends React.Component{
@@ -76,6 +97,7 @@ class Field extends React.Component{
 
 function App() {
   const [summonerName, setSummonerName] = useState('');
+  const [playersInfo, setPlayersInfo] = useState({});
 
   return (
     <div className="App">
