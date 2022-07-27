@@ -3,7 +3,7 @@ import './App.css';
 import axios from 'axios';
 import ReactDOM from 'react-dom/client'
 
-var apiKey = 'RGAPI-da61ea78-0dd8-4288-bce8-f6234e3a0832';
+var apiKey = 'RGAPI-933a31c5-3e2e-4662-a5cb-5f4903bf1bd9';
 var apiBase = 'https://na1.api.riotgames.com';
 var apiBaseAmericas = 'https://americas.api.riotgames.com';
 
@@ -27,6 +27,7 @@ function getSummonerInfo(summonerName){
   })
 }
 
+//takes iin the puuid of a player and returns {count} most recent matches
 function getMatchesInfo(puuid, count){
   var apiString = apiBaseAmericas + '/tft/match/v1/matches/by-puuid/'
                   + puuid + '/ids'+ '?start=' + '0'
@@ -42,6 +43,7 @@ function getMatchesInfo(puuid, count){
   
 }
 
+// taking the match ID and returns the participants(with puuid) that appeared in that match
 function getMatchDetail(matchID){
   var apiString = apiBaseAmericas + '/tft/match/v1/matches/' + matchID + '?api_key=' + apiKey
   return axios.get(apiString).then(function(response){
@@ -55,8 +57,23 @@ function getMatchDetail(matchID){
   })
 }
 
-function getPlayerStats(players){
+//taking a list of matches, and analyze the player's most recently played comps
+function analyzeMatches(matches){
+  for (let i = 0; i < matches.length; i++){
+    console.log(i + ' :' + matches[i])
+  }
+}
 
+//taking every player, and returns the player's most recently played comps
+function analyzePlayer(player){
+  var matchesPromise = getMatchesInfo(player, 20);
+  matchesPromise.then(function (object) {
+    return analyzeMatches(object)
+  });
+}
+
+function getPlayerStats(player){
+  return analyzePlayer(player)
 }
 
 function searchHandler(e, summonerName){
@@ -81,7 +98,7 @@ function searchHandler(e, summonerName){
     return getMatchDetail(match_interested)
   })
 
-  matchPromise.then(object => getPlayerStats(object));
+  matchPromise.then(object => object.map(player => getPlayerStats(player)));
 }
 
 class Field extends React.Component{
@@ -97,7 +114,6 @@ class Field extends React.Component{
 
 function App() {
   const [summonerName, setSummonerName] = useState('');
-  const [playersInfo, setPlayersInfo] = useState({});
 
   return (
     <div className="App">
