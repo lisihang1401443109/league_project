@@ -3,7 +3,7 @@ import './App.css';
 import axios from 'axios';
 import ReactDOM from 'react-dom/client'
 
-var apiKey = 'RGAPI-933a31c5-3e2e-4662-a5cb-5f4903bf1bd9';
+var apiKey = 'RGAPI-b86f6b42-6db0-4320-92d0-fdad7c12786e';
 var apiBase = 'https://na1.api.riotgames.com';
 var apiBaseAmericas = 'https://americas.api.riotgames.com';
 
@@ -61,6 +61,7 @@ function getMatchDetail(matchID){
 function analyzeMatches(matches){
   for (let i = 0; i < matches.length; i++){
     console.log(i + ' :' + matches[i])
+    
   }
 }
 
