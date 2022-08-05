@@ -72,11 +72,11 @@ function App() {
   }
 
   //taking a list of matches, and analyze the player's most recently played comps
-  function analyzeMatches(matches){
+  function analyzeMatches(matches, player){
     for (let i = 0; i < matches.length; i++){
       console.log(i + ' :' + matches[i])
       //TODO: analyze for the players comp
-      analyzeMatches(matches[i])
+      analyzeMatches(matches[i], player)
     }
   }
 
@@ -84,7 +84,7 @@ function App() {
   function analyzePlayer(player){
     var matchesPromise = getMatchesInfo(player, 20);
     matchesPromise.then(function (object) {
-      return analyzeMatches(object)
+      return analyzeMatches(object, player)
     });
   }
 
