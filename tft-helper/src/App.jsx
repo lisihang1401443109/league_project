@@ -10,9 +10,10 @@ function App() {
 
   return (
     <div className="App">
-      <div className='container'>
-        <input ref={summonerNameRef} type="text" placeholder='summoner-name'></input>
-        <button>submit</button>
+      <div className='container' id='get-user-inputs'>
+        <input id='user-input' ref={summonerNameRef} type="text" placeholder='summoner-name'></input>
+        <br></br>
+        <button id='submut-button'>submit</button>
       </div>
     </div>
   );
