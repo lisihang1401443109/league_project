@@ -1,25 +1,14 @@
 import React, { useState, useEffect} from 'react';
 import './App.css';
 import axios from 'axios';
-import ReactDOM from 'react-dom/client'
 import analyzeMatch from './analyzeMatch';
+// import axiosThrottle from 'axios-request-throttle';
 
 const apiKey = 'RGAPI-94128ce4-8f03-43ff-884f-a437009df462';
 const apiBase = 'https://na1.api.riotgames.com';
 const apiBaseAmericas = 'https://americas.api.riotgames.com';
 const threshold = 1000
 const limit = 20
-const [requestQueue, setRequestQueue] = useState([])
-
-const makeRequest = (reqUrl, { params }) => {
-  if (requestQueue.length >= limit){
-     s
-  }
-  if (requestQueue.length > 0 && new Date().getTime() - requestQueue[0] > threshold) {
-    setRequestQueue(requestQueue.slice(1))
-  }
-
-}
 
 
 
@@ -27,11 +16,7 @@ function App() {
   const [summonerName, setSummonerName] = useState('');
   const timeout = 1000
   const threshold = 20
-  const [reqQueue, setReqQueue] = useState(0)
 
-  useEffect(() => {
-      console.log(reqQueue)
-  }, [reqQueue])
 
   // using the summonerName to get the information including PUUID of the summoner
   function getSummonerInfo(summonerName){
