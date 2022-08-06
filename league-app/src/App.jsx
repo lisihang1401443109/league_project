@@ -1,4 +1,4 @@
-import React, { useState, } from 'react';
+import React, { useState, useEffect} from 'react';
 import './App.css';
 import axios from 'axios';
 import ReactDOM from 'react-dom/client'
@@ -23,20 +23,15 @@ const makeRequest = (reqUrl, { params }) => {
 
 
 
-class Field extends React.Component{
-
-  render(){
-    return(
-      <div>
-          {this.props.value}
-      </div>
-    )
-  }
-}
-
 function App() {
   const [summonerName, setSummonerName] = useState('');
+  const timeout = 1000
+  const threshold = 20
+  const [reqQueue, setReqQueue] = useState(0)
 
+  useEffect(() => {
+      console.log(reqQueue)
+  }, [reqQueue])
 
   // using the summonerName to get the information including PUUID of the summoner
   function getSummonerInfo(summonerName){
@@ -135,6 +130,8 @@ function App() {
     matchPromise.then(object => object.map(player => getPlayerStats(player)));
   }
 
+
+
   return (
     <div className="App">
       <input type="text" className="summoner-name-input" placeholder="summoner-name" onChange={e => setSummonerName(e.target.value)}></input>
@@ -143,8 +140,6 @@ function App() {
     </div>
   );
 }
-
-// const root = ReactDOM.createRoot(document.getElementById("container"));
 
 export default App;
 export {apiBase, apiKey, apiBaseAmericas}
