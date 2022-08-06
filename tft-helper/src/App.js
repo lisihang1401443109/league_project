@@ -1,23 +1,19 @@
-import logo from './logo.svg';
 import './App.css';
+import React, { useRef, useEffect, useState} from 'react';
 
 function App() {
+  const summonerNameRef = useRef()
+  useEffect(() => {
+    console.log('summonerName: ' + summonerNameRef.current)
+    }
+    ,[summonerNameRef])
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className='container'>
+        <input ref={summonerNameRef} type="text" placeholder='summoner-name'></input>
+        <button>submit</button>
+      </div>
     </div>
   );
 }
