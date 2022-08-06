@@ -27,4 +27,11 @@
 
 #submit-button {
   position: relative;
+  width: 100%;
+}
+
+#get-user-inputs {
+  width: 250;
+  height: auto;
+  background-color: blueviolet;
 }
