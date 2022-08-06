@@ -2,10 +2,26 @@ import React, { useState, } from 'react';
 import './App.css';
 import axios from 'axios';
 import ReactDOM from 'react-dom/client'
+import analyzeMatch from './analyzeMatch';
 
-const apiKey = 'RRGAPI-eae9a744-233f-484b-be94-8cf9fd8568ab';
+const apiKey = 'RGAPI-94128ce4-8f03-43ff-884f-a437009df462';
 const apiBase = 'https://na1.api.riotgames.com';
 const apiBaseAmericas = 'https://americas.api.riotgames.com';
+const threshold = 1000
+const limit = 20
+const [requestQueue, setRequestQueue] = useState([])
+
+const makeRequest = (reqUrl, { params }) => {
+  if (requestQueue.length >= limit){
+     s
+  }
+  if (requestQueue.length > 0 && new Date().getTime() - requestQueue[0] > threshold) {
+    setRequestQueue(requestQueue.slice(1))
+  }
+
+}
+
+
 
 class Field extends React.Component{
 
@@ -62,6 +78,7 @@ function App() {
     var apiString = apiBaseAmericas + '/tft/match/v1/matches/' + matchID + '?api_key=' + apiKey
     return axios.get(apiString).then(function(response){
       if ('data' in response){
+        console.log('participants: ' + JSON.stringify(response.data.metadata.participants));
         return response.data.metadata.participants
       }else{
         return response.metadata.participants
@@ -76,7 +93,7 @@ function App() {
     for (let i = 0; i < matches.length; i++){
       console.log(i + ' :' + matches[i])
       //TODO: analyze for the players comp
-      analyzeMatches(matches[i], player)
+      analyzeMatch(matches[i], player)
     }
   }
 
@@ -111,6 +128,7 @@ function App() {
     const matchPromise = matches_data.then(function(matches){
       // get the most recent match
       var match_interested = matches[0]
+      console.log('match: ' + match_interested);
       return getMatchDetail(match_interested)
     })
 
@@ -129,3 +147,4 @@ function App() {
 // const root = ReactDOM.createRoot(document.getElementById("container"));
 
 export default App;
+export {apiBase, apiKey, apiBaseAmericas}
