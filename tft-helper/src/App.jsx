@@ -5,7 +5,7 @@ import axiosThrottle from 'axios-request-throttle'
 
 function App() {
 
-  const apiStirngBase = 'https://na1.api.riotgames.com'
+  const apiStringBase = 'https://na1.api.riotgames.com'
   const apiKey = 'RGAPI-b802dfdc-9ff5-4fcd-a125-e6f6861a49ee'
   const apiStirngBaseAmerica = 'https://americas.api.riotgames.com'
 
@@ -32,26 +32,45 @@ function App() {
     }).catch(displayError)
   }
 
+  // get the participants in the game given the matchID
+  // exclude myself if the player of interest is in it
+  const findParticipants = (matchID, myself = '') => {
+    const apiString = apiStirngBaseAmerica + '/tft/match/v1/matches/' + matchID + '?api_key' + apiKey
+    return axios.get(apiString).then( (response) => {
+      if ('metadata' in response){
+        return response.metadata.participants.filter(x => x != myself)
+      }else{
+        return response.participants.filter(x => x != myself)
+      }
+    }).catch(displayError)
+  }
+
   const clickHandler = (e) =>{
     e.preventDefault()
 
     console.log(summonerNameRef.current.value)
+    var myPuuid = ''
 
     // make api call to get the puuid of the player interested
-    const apiString = apiStirngBase + '/tft/summoner/v1/summoners/by-name/' + summonerNameRef.current.value + '?api_key=' + apiKey
+    const apiString = apiStringBase + '/tft/summoner/v1/summoners/by-name/' + summonerNameRef.current.value + '?api_key=' + apiKey
     const playerInfoPromise = axios.get(apiString).then( (response) => {
       console.log(response)
       displayError('')
       if ('data' in response){
         console.log(response.data.puuid)
+        myPuuid = response.data.puuid
         return response.data.puuid
       }else{
         console.log(response.puuid)
+        myPuuid = response.puuid
         return response.puuid
       }
     }).catch(displayError)
 
-    playerInfoPromise.then( (response) => findMostRecentMatches(response, 1)).catch(displayError).then((res) => console.log(res))
+    //get the player's most recent match and participants in it
+    playerInfoPromise.then( (response) => findMostRecentMatches(response, 1)).catch(displayError).then(
+      (response) => (findParticipants(response, myPuuid))
+    ).catch(displayError)
 
 
 
