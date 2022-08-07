@@ -21,9 +21,9 @@ function App() {
 
   // the count-most recent matches
   const findMostRecentMatches = (puuid, count) => {
-    const apiString = apiStirngBaseAmerica + '\/tft/match/v1/matches/by-puuid/' + puuid + '/ids' + '?api_key=' + apiKey + '&count=' + count
+    const apiString = apiStirngBaseAmerica + '/tft/match/v1/matches/by-puuid/' + puuid + '/ids' + '?api_key=' + apiKey + '&count=' + count
     return axios.get(apiString).then( (response) => {
-      console.log(response)
+      // console.log(response)
       if ('data' in response){
         return response.data
       }else{
@@ -35,12 +35,12 @@ function App() {
   // get the participants in the game given the matchID
   // exclude myself if the player of interest is in it
   const findParticipants = (matchID, myself = '') => {
-    const apiString = apiStirngBaseAmerica + '/tft/match/v1/matches/' + matchID + '?api_key' + apiKey
+    const apiString = apiStirngBaseAmerica + '/tft/match/v1/matches/' + matchID + '?api_key=' + apiKey
     return axios.get(apiString).then( (response) => {
-      if ('metadata' in response){
-        return response.metadata.participants.filter(x => x != myself)
+      if ('metadata' in response.data){
+        return response.data.metadata.participants.filter(x => x != myself)
       }else{
-        return response.participants.filter(x => x != myself)
+        return response.data.participants.filter(x => x != myself)
       }
     }).catch(displayError)
   }
@@ -68,11 +68,14 @@ function App() {
     }).catch(displayError)
 
     //get the player's most recent match and participants in it
-    playerInfoPromise.then( (response) => findMostRecentMatches(response, 1)).catch(displayError).then(
+    const participantsPromise = playerInfoPromise.then( (response) => findMostRecentMatches(response, 1)).catch(displayError).then(
       (response) => (findParticipants(response, myPuuid))
     ).catch(displayError)
 
-
+    //do something for each participants
+    participantsPromise.then( (response) => {
+      return Promise.all(response.map( x => findMostRecentMatches(x, 20)))
+    }).then(res => console.log(res))
 
 
     // on the promise, the puuid of all participants in the latest game
