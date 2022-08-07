@@ -2,12 +2,14 @@ import './App.css';
 import React, { useRef, useEffect, useState} from 'react';
 import axios from 'axios'
 import axiosThrottle from 'axios-request-throttle'
+import processPlayerObject from './processPlayerObject';
 
 function App() {
 
   const apiStringBase = 'https://na1.api.riotgames.com'
   const apiKey = 'RGAPI-b802dfdc-9ff5-4fcd-a125-e6f6861a49ee'
   const apiStirngBaseAmerica = 'https://americas.api.riotgames.com'
+  const numMatchesForAnalyze = 10
 
   // use throttled version of axios to get around the rate limit of riot developer api
   axiosThrottle.use(axios, { requestsPerSecond: 20 })
@@ -30,6 +32,19 @@ function App() {
         return response
       }
     }).catch(displayError)
+  }
+
+  const analyzeMatch = (matchID, playerID) => {
+    const apiString = apiStirngBaseAmerica + '/tft/match/v1/matches/' + matchID + '?api_key=' + apiKey
+    const matchPromise = axios.get(apiString)
+    matchPromise.then( (response) => {
+      var info = response.data.info
+      if (info.tft_set_number != 7){
+        return null
+      }
+      var playerObject = info.participants.filter(x => x.puuid == playerID)
+      processPlayerObject(playerObject)
+    })
   }
 
   // get the participants in the game given the matchID
@@ -74,7 +89,7 @@ function App() {
 
     //do something for each participants
     participantsPromise.then( (response) => {
-      return Promise.all(response.map( x => findMostRecentMatches(x, 20)))
+      return Promise.all(response.map( x => findMostRecentMatches(x, numMatchesForAnalyze)))
     }).then(res => console.log(res))
 
 
