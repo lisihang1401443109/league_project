@@ -17,21 +17,31 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 20%;
+  height: 60%;
   width: 50%;
 }
 
 #user-input {
-  position: relative;
+  position: inherit;
+  width: 95%;
 }
 
 #submit-button {
-  position: relative;
+  position: inherit;
   width: 100%;
 }
 
 #get-user-inputs {
+  padding: 20px;
   width: 250;
   height: auto;
   background-color: blueviolet;
+}
+
+.errorMessage {
+  position: absolute;
+  background-color: yellow;
+  visibility: hidden;
+  top: 0;
+
 }
