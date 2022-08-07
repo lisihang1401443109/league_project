@@ -7,6 +7,7 @@ function App() {
 
   const apiStirngBase = 'https://na1.api.riotgames.com'
   const apiKey = 'RGAPI-b802dfdc-9ff5-4fcd-a125-e6f6861a49ee'
+  const apiStirngBaseAmerica = 'https://americas.api.riotgames.com'
 
   // use throttled version of axios to get around the rate limit of riot developer api
   axiosThrottle.use(axios, { requestsPerSecond: 20 })
@@ -19,8 +20,16 @@ function App() {
   const displayError = (error) => errorDisplayRef.current.innerHTML = error
 
   // the count-most recent matches
-  const findMostRecentMatches(puuid, count){
-    
+  const findMostRecentMatches = (puuid, count) => {
+    const apiString = apiStirngBaseAmerica + '\/tft/match/v1/matches/by-puuid/' + puuid + '/ids' + '?api_key=' + apiKey + '&count=' + count
+    return axios.get(apiString).then( (response) => {
+      console.log(response)
+      if ('data' in response){
+        return response.data
+      }else{
+        return response
+      }
+    }).catch(displayError)
   }
 
   const clickHandler = (e) =>{
@@ -42,7 +51,7 @@ function App() {
       }
     }).catch(displayError)
 
-    playerInfoPromise.then( (response) => findMostRecentMatches(response, 1)).catch(displayError)
+    playerInfoPromise.then( (response) => findMostRecentMatches(response, 1)).catch(displayError).then((res) => console.log(res))
 
 
 
