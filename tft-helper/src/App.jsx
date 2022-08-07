@@ -18,6 +18,11 @@ function App() {
 
   const displayError = (error) => errorDisplayRef.current.innerHTML = error
 
+  // the count-most recent matches
+  const findMostRecentMatches(puuid, count){
+    
+  }
+
   const clickHandler = (e) =>{
     e.preventDefault()
 
@@ -25,10 +30,20 @@ function App() {
 
     // make api call to get the puuid of the player interested
     const apiString = apiStirngBase + '/tft/summoner/v1/summoners/by-name/' + summonerNameRef.current.value + '?api_key=' + apiKey
-    axios.get(apiString).then( (response) => {
+    const playerInfoPromise = axios.get(apiString).then( (response) => {
       console.log(response)
       displayError('')
+      if ('data' in response){
+        console.log(response.data.puuid)
+        return response.data.puuid
+      }else{
+        console.log(response.puuid)
+        return response.puuid
+      }
     }).catch(displayError)
+
+    playerInfoPromise.then( (response) => findMostRecentMatches(response, 1)).catch(displayError)
+
 
 
 
