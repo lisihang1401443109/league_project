@@ -7,7 +7,7 @@ import processPlayerObject from './processPlayerObject';
 function App() {
 
   const apiStringBase = 'https://na1.api.riotgames.com'
-  const apiKey = 'RGAPI-b802dfdc-9ff5-4fcd-a125-e6f6861a49ee'
+  const apiKey = 'RGAPI-91b436a0-0818-4e41-be97-63c1c09b1a79'
   const apiStirngBaseAmerica = 'https://americas.api.riotgames.com'
   const numMatchesForAnalyze = 10
 
@@ -60,6 +60,12 @@ function App() {
     }).catch(displayError)
   }
 
+  const analyzeMatchDetails = (matchIDs) => {
+    return Promise.all(matchIDs.map(id => {
+      return axios.get(apiStirngBaseAmerica + '/tft/match/v1/matches/' + id + '?api_key=' + apiKey)
+    })).then((response) => console.log(response));
+  }
+
   const clickHandler = (e) =>{
     e.preventDefault()
 
@@ -90,7 +96,10 @@ function App() {
     //do something for each participants
     participantsPromise.then( (response) => {
       return Promise.all(response.map( x => findMostRecentMatches(x, numMatchesForAnalyze)))
-    }).then(res => console.log(res))
+    }).then(res => {
+      console.log(res)
+      return res.map(player_matches => analyzeMatchDetails(player_matches))
+    })
 
 
     // on the promise, the puuid of all participants in the latest game
