@@ -34,6 +34,8 @@ function App() {
     }).catch(displayError)
   }
 
+  // for each of the participant object in the match, find the corresponding participant object
+  // and start to process it
   const analyzeMatch = (matchID, playerID) => {
     const apiString = apiStirngBaseAmerica + '/tft/match/v1/matches/' + matchID + '?api_key=' + apiKey
     const matchPromise = axios.get(apiString)
