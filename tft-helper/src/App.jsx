@@ -62,10 +62,13 @@ function App() {
     }).catch(displayError)
   }
 
-  const analyzeMatchDetails = (matchIDs) => {
+  const analyzeMatchDetails = (matchIDs, playerID) => {
     return Promise.all(matchIDs.map(id => {
       return axios.get(apiStirngBaseAmerica + '/tft/match/v1/matches/' + id + '?api_key=' + apiKey)
-    })).then((response) => console.log(response));
+    })).then( responses => {
+      console.log([playerID, responses])
+      return [playerID, responses]
+    })
   }
 
   const clickHandler = (e) =>{
@@ -97,10 +100,10 @@ function App() {
 
     //do something for each participants
     participantsPromise.then( (response) => {
-      return Promise.all(response.map( x => findMostRecentMatches(x, numMatchesForAnalyze)))
+      return Promise.all(response.map( x => findMostRecentMatches(x, numMatchesForAnalyze).then( (response) => [x, response])))
     }).then(res => {
       console.log(res)
-      return res.map(player_matches => analyzeMatchDetails(player_matches))
+      return res.map(player_matches => analyzeMatchDetails(player_matches[1], player_matches[0]))
     })
 
 
