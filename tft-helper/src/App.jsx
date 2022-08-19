@@ -7,7 +7,7 @@ import processPlayerObject from './processPlayerObject';
 function App() {
 
   const apiStringBase = 'https://na1.api.riotgames.com'
-  const apiKey = 'RGAPI-91b436a0-0818-4e41-be97-63c1c09b1a79'
+  const apiKey = 'RGAPI-8f62f87e-7e29-41f3-bfd5-42c649900476'
   const apiStirngBaseAmerica = 'https://americas.api.riotgames.com'
   const numMatchesForAnalyze = 10
 
@@ -66,7 +66,7 @@ function App() {
     return Promise.all(matchIDs.map(id => {
       return axios.get(apiStirngBaseAmerica + '/tft/match/v1/matches/' + id + '?api_key=' + apiKey)
     })).then( responses => {
-      console.log([playerID, responses])
+      // console.log([playerID, responses])
       return [playerID, responses]
     })
   }
@@ -104,7 +104,7 @@ function App() {
     }).then(res => {
       console.log(res)
       return res.map(player_matches => analyzeMatchDetails(player_matches[1], player_matches[0]))
-    })
+    }).then(res => console.log(res))
 
 
     // on the promise, the puuid of all participants in the latest game
