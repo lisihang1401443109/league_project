@@ -51,7 +51,7 @@ function App() {
 
   // get the participants in the game given the matchID
   // exclude myself if the player of interest is in it
-  const findParticipants = (matchID, myself = '') => {
+  const findParticipants = async (matchID, myself = '') => {
     const apiString = apiStirngBaseAmerica + '/tft/match/v1/matches/' + matchID + '?api_key=' + apiKey
     return axios.get(apiString).then( (response) => {
       if ('metadata' in response.data){
@@ -62,12 +62,18 @@ function App() {
     }).catch(displayError)
   }
 
-  const analyzeMatchDetails = (matchIDs, playerID) => {
-    return Promise.all(matchIDs.map(id => {
-      return axios.get(apiStirngBaseAmerica + '/tft/match/v1/matches/' + id + '?api_key=' + apiKey)
-    })).then( responses => {
-      // console.log([playerID, responses])
-      return [playerID, responses]
+  const analyzeMatchDetails = async (matchIDs, playerID) => {
+    console.log('analyzing match details')
+    console.log(matchIDs, playerID)
+
+    const playerObjects = await matchIDs.map(matchID => {
+      const apiString = apiStirngBaseAmerica + '/tft/match/v1/matches/' + matchID + '?api_key=' + apiKey
+      return axios.get(apiString).then( (response) => {
+        const playerObj = response.data.info.participants
+        // console.log(playerObj, playerID) 
+        console.log(playerObj.filter(x => x.puuid == playerID)[0])
+        return playerObj
+      })
     })
   }
 
@@ -85,6 +91,7 @@ function App() {
       if ('data' in response){
         console.log(response.data.puuid)
         myPuuid = response.data.puuid
+        console.log('mypuuid: ' + myPuuid)
         return response.data.puuid
       }else{
         console.log(response.puuid)
@@ -99,12 +106,15 @@ function App() {
     ).catch(displayError)
 
     //do something for each participants
-    participantsPromise.then( (response) => {
-      return Promise.all(response.map( x => findMostRecentMatches(x, numMatchesForAnalyze).then( (response) => [x, response])))
-    }).then(res => {
-      console.log(res)
-      return res.map(player_matches => analyzeMatchDetails(player_matches[1], player_matches[0]))
-    }).then(res => console.log(res))
+    participantsPromise.then( (playerIDs) => {
+      return playerIDs.filter(playerID => playerID != myPuuid).map(playerID => {
+        console.log(playerID)
+        const recentNMatches = findMostRecentMatches(playerID, numMatchesForAnalyze)
+        recentNMatches.then( (matches) => {
+          return analyzeMatchDetails(matches, playerID)
+        })
+      })
+    }).then( (response) => console.log(response) );
 
 
     // on the promise, the puuid of all participants in the latest game
