@@ -7,7 +7,7 @@ import processPlayerObject from './processPlayerObject';
 function App() {
 
   const apiStringBase = 'https://na1.api.riotgames.com'
-  const apiKey = 'RGAPI-8f62f87e-7e29-41f3-bfd5-42c649900476'
+  const apiKey = 'RGAPI-5fc2cb96-51d8-4518-94f7-127a84f9c317'
   const apiStirngBaseAmerica = 'https://americas.api.riotgames.com'
   const numMatchesForAnalyze = 10
 
@@ -62,11 +62,13 @@ function App() {
     }).catch(displayError)
   }
 
+  // for each of the set of matchIDs of a player, do analysis
   const analyzeMatchDetails = async (matchIDs, playerID) => {
     console.log('analyzing match details')
     console.log(matchIDs, playerID)
 
     const playerObjects = await matchIDs.map(matchID => {
+      // make api calls for each match, getting the player object of the player of interest
       const apiString = apiStirngBaseAmerica + '/tft/match/v1/matches/' + matchID + '?api_key=' + apiKey
       return axios.get(apiString).then( (response) => {
         const playerObj = response.data.info.participants
@@ -130,7 +132,7 @@ function App() {
         <input id='user-input' ref={summonerNameRef} type="text" placeholder='summoner-name'></input>
         <br></br>
         <button id='submit-button' onClick={clickHandler}>submit</button>
-        <div className='error-message' ref={errorDisplayRef}></div>
+        <div className='error-message' ref={errorDisplayRef}></div> 
       </div>
     </div>
   );
